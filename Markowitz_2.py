@@ -69,6 +69,49 @@ class MyPortfolio:
         """
         TODO: Complete Task 4 Below
         """
+        # eigen  not find a good solution :(
+        # def get_weights(price):
+        #     sigma = price.cov()
+        #     _, Q = np.linalg.eigh(sigma)
+        #     weights = (Q[:, -1] / np.sum(Q[:, -1]))
+        #     weights[weights <= 0 ] = 0
+        #     weights = weights / weights.sum()
+        #     return weights
+        # day = x
+        # weights = 1/len(assets)
+        # self.portfolio_weights[assets] = weights
+        # for i in range(day, len(self.price)):
+        #     if i%day==0:
+        #         lookback = min(y, i)
+        #         prices = self.returns.copy()[assets].iloc[i - lookback : i]
+        #         weights = get_weights(prices)
+        #     self.portfolio_weights.loc[self.portfolio_weights.index[i], assets] = weights
+
+
+        def get_weights(price):
+            mu = price.mean()
+            sigma = price.cov()
+
+            inv_sigma = np.linalg.pinv(sigma)
+            ones = np.ones(len(price.columns))
+
+            inv_cov_mat = np.linalg.pinv(sigma)
+            inv_dot_ones = np.dot(inv_cov_mat, ones)
+            weights = inv_dot_ones / np.dot(inv_dot_ones, ones)
+            weights = weights / weights.sum()
+            return weights
+        x = 5
+        y = 6
+        day = x
+        weights = 1/len(assets)
+        self.portfolio_weights[assets] = weights
+        for i in range(day, len(self.price)):
+            if i%day==0:
+                lookback = min(y, i)
+                prices = self.returns.copy()[assets].iloc[i - lookback : i]
+                weights = get_weights(prices)
+            self.portfolio_weights.loc[self.portfolio_weights.index[i], assets] = weights
+
 
         """
         TODO: Complete Task 4 Above
